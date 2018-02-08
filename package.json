@@ -1,0 +1,23 @@
+{
+  "name": "nodejs_tutorial",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app_cookie.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hellomac87/NodeJS_Tutorial.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hellomac87/NodeJS_Tutorial/issues"
+  },
+  "homepage": "https://github.com/hellomac87/NodeJS_Tutorial#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.2"
+  }
+}
