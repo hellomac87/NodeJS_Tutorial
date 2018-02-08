@@ -18,6 +18,7 @@
   "homepage": "https://github.com/hellomac87/NodeJS_Tutorial#readme",
   "dependencies": {
     "cookie-parser": "^1.4.3",
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "supervisor": "^0.12.0"
   }
 }
