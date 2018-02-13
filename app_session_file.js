@@ -23,7 +23,9 @@ app.get('/count', function(req, res){
 
 app.get('/auth/logout', function(req, res){
   delete req.session.displayName;
-  res.redirect('/welcome');
+  return req.session.save(function(){
+    res.redirect('/welcome');
+  });
 });
 
 app.get('/welcome', function(req, res){
@@ -58,7 +60,7 @@ app.post('/auth/login', function(req, res){
     return req.session.save(function(){
         res.redirect('/welcome');
     })
-  
+
   }else{
     res.send('there is no user <a href="/auth/login">login</a>');
   }
