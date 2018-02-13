@@ -19,13 +19,18 @@ app.get('/count', function(req, res){
   res.send('count : ' + req.session.count);
 });
 
+app.get('/auth/logout', function(req, res){
+  delete req.session.displayName;
+  res.redirect('/welcome');
+});
+
 app.get('/welcome', function(req, res){
   //로그인 성공시 세션 다룰 코드
   if(req.session.displayName){
     //로그인 성공
     res.send(`
       <h1>Hello, ${req.session.displayName}</h1>
-      <a href='/auth/logout'>Login</a>
+      <a href='/auth/logout'>logout</a>
       `);
   }else{
     //로그인 실패, 없음
