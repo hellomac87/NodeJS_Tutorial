@@ -1,5 +1,6 @@
 var express = require('express');
 var session = require('express-session');
+var FileStore = require('session-file-store')(session);
 var bodyParser = require('body-parser');
 var app = express();
 
@@ -7,7 +8,8 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(session({
   secret: 'somerandomvalue',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  store: new FileStore()
 }));
 
 app.get('/count', function(req, res){
@@ -53,7 +55,10 @@ app.post('/auth/login', function(req, res){
 
   if(uname === user.username && pwd === user.password){
     req.session.displayName = user.displayName;
-    res.redirect('/welcome');
+    return req.session.save(function(){
+        res.redirect('/welcome');
+    })
+  
   }else{
     res.send('there is no user <a href="/auth/login">login</a>');
   }
