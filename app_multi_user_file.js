@@ -2,7 +2,7 @@ var express = require('express');
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
 var bodyParser = require('body-parser');
-var md5 = require('md5');
+var sha256 = require('sha256');
 var app = express();
 
 app.use(bodyParser.urlencoded({extended:false}));
@@ -56,7 +56,7 @@ app.post('/auth/login', function(req, res){
 
   for(var i=0; i<users.length; i++){
     var user = users[i];
-    if(uname === user.username && md5(pwd) === user.password){
+    if(uname === user.username && sha256(pwd+user.salt) === user.password){
       req.session.displayName = user.displayName;
       return req.session.save(function(){
           res.redirect('/welcome');
@@ -81,8 +81,15 @@ app.post('/auth/register', function(req, res){
 var users = [
   {
     username : 'egoing',
-    password : '698d51a19d8a121ce581499d7b701668',
+    password : 'dbbbdd8010ef896e3fa976ddc376b5aba35eb66f21feaa7c898e2ea8b9f2b9f1',
+    salt: 'asfasdf',
     displayName:'Egoing'
+  },
+  {
+    username : 'K8805',
+    password : '2c8951bbd5ddd080f158810a6169d9ac139d0e78762d53c1fcf10cd3d4658a73',
+    salt: 'asdawqe',
+    displayName:'K5'
   }
 ];
 app.get('/auth/register', function(req, res){
