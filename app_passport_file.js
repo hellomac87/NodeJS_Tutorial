@@ -57,34 +57,60 @@ app.get('/welcome', function(req, res){
   }
 });
 
-app.post('/auth/login', function(req, res){
+passport.use(new LocalStrategy(
+  function(username, password, done){
+    var uname = username;
+    var pwd = password;
 
-  var uname = req.body.username;
-  var pwd = req.body.password;
-
-  for(var i=0; i<users.length; i++){
-    var user = users[i];
-    if(uname === user.username) {
-      return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
-        if(hash === user.password){
-          req.session.displayName = user.displayName;
-          return req.session.save(function(){
-            res.redirect('/welcome');
-          });
-        } else {
-          res.send('there is no user <a href="/auth/login">login</a>');
-        }
-      });
+    for(var i=0; i<users.length; i++){
+      var user = users[i];
+      if(uname === user.username) {
+        return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
+          if(hash === user.password){
+            done(null, user);
+          } else {
+            done(null, false);
+          }
+        });
+      }
     }
-    // if(uname === user.username && sha256(pwd+user.salt) === user.password){
-    //   req.session.displayName = user.displayName;
-    //   return req.session.save(function(){
-    //       res.redirect('/welcome');
-    //   });
-    // }
+    done(null, false);
   }
-  res.send('there is no user <a href="/auth/login">login</a>');
-});
+));
+
+app.post(
+  '/auth/login',
+  passport.authenticate(
+    'local',
+    {
+      successRedirect: '/welcome',
+      failureRedirect: '/auth/login',
+      failureFlash: false
+    }
+  )
+);
+// app.post('/auth/login', function(req, res){
+//
+//   var uname = req.body.username;
+//   var pwd = req.body.password;
+//
+//   for(var i=0; i<users.length; i++){
+//     var user = users[i];
+//     if(uname === user.username) {
+//       return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
+//         if(hash === user.password){
+//           req.session.displayName = user.displayName;
+//           return req.session.save(function(){
+//             res.redirect('/welcome');
+//           });
+//         } else {
+//           res.send('there is no user <a href="/auth/login">login</a>');
+//         }
+//       });
+//     }
+//   }
+//   res.send('there is no user <a href="/auth/login">login</a>');
+// });
 
 app.post('/auth/register', function(req, res){
   hasher({password:req.body.password}, function(err, pass, salt, hash){
