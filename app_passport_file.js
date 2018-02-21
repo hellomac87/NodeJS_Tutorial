@@ -95,6 +95,20 @@ passport.use(new LocalStrategy(
   }
 ));
 
+passport.use(new FacebookStrategy({
+    clientID: '337257946769997',
+    clientSecret: '5777399cad8042e97b8b13e07ec7cbb0',
+    callbackURL: "/auth/facebook/callback"
+  },
+  function(accessToken, refreshToken, profile, done) {
+    // User.findOrCreate(..., function(err, user) {
+    //   if (err) { return done(err); }
+    //   done(null, user);
+    // });
+  }
+));
+
+//LocalStrategy
 app.post(
   '/auth/login',
   passport.authenticate(
@@ -106,28 +120,22 @@ app.post(
     }
   )
 );
-// app.post('/auth/login', function(req, res){
-//
-//   var uname = req.body.username;
-//   var pwd = req.body.password;
-//
-//   for(var i=0; i<users.length; i++){
-//     var user = users[i];
-//     if(uname === user.username) {
-//       return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
-//         if(hash === user.password){
-//           req.session.displayName = user.displayName;
-//           return req.session.save(function(){
-//             res.redirect('/welcome');
-//           });
-//         } else {
-//           res.send('there is no user <a href="/auth/login">login</a>');
-//         }
-//       });
-//     }
-//   }
-//   res.send('there is no user <a href="/auth/login">login</a>');
-// });
+//FacebookStrategy
+app.get(
+  '/auth/facebook',
+  passport.authenticate(
+    'facebook'
+  )
+);
+app.get(
+  '/auth/facebook/callback',
+  passport.authenticate(
+    'facebook', {
+      successRedirect: '/welcome',
+      failureRedirect: '/auth/login'
+    }
+  )
+);
 
 app.post('/auth/register', function(req, res){
   hasher({password:req.body.password}, function(err, pass, salt, hash){
@@ -189,9 +197,10 @@ app.get('/auth/login', function(req, res){
     <input type='submit'>
     </p>
     </form>
+    <a href='/auth/facebook'>facebook</a>
   `;
   res.send(output);
-})
+});
 
 app.listen(3000, function(){
     console.log('Connected 3000 port');
