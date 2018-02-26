@@ -79,23 +79,35 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(id, done) {
   console.log('deserializeUser', id);
-  for(var i=0; i<users.length; i++){
-    var user = users[i];
-    if(user.authId === id){
-      return done(null, user)
+  var sql = 'SELECT * FROM users WHERE authId=?';
+  conn.query(sql, [id], function(err, results){
+    console.log(sql, err, results);
+    if(err){
+      console.log(err);
+      done('There is no user');
+    }else{
+      done(null, results[0]);
     }
-  }
-  done('there is no user');
+  });
+  // for(var i=0; i<users.length; i++){
+  //   var user = users[i];
+  //   if(user.authId === id){
+  //     return done(null, user)
+  //   }
+  // }
+  // done('there is no user');
 });
 
 passport.use(new LocalStrategy(
   function(username, password, done){
     var uname = username;
     var pwd = password;
-
-    for(var i=0; i<users.length; i++){
-      var user = users[i];
-      if(uname === user.username) {
+    var sql = 'SELECT * FROM users WHERE authId=?'
+    conn.query(sql,['local:'+uname], function(err, results){
+      if(err){
+        return done('There is no user');
+      }else{
+        var user = results[0];
         return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
           if(hash === user.password){
             console.log('LocalStrategy', user);
@@ -105,8 +117,7 @@ passport.use(new LocalStrategy(
           }
         });
       }
-    }
-    done(null, false);
+    })
   }
 ));
 
@@ -180,14 +191,14 @@ app.post('/auth/register', function(req, res){
         console.log(err);
         res.status(500).send('Internal Server Error');
       }else{
-        res.redirect('/welcome');
+        req.login(user, function(err){
+          req.session.save(function(){
+            res.redirect('/welcome');
+          });
+        });
       }
     });
-    // req.login(user, function(err){
-    //   req.session.save(function(){
-    //     res.redirect('/welcome');
-    //   });
-    // });
+
   });
 });
 
