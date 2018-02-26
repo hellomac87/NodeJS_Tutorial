@@ -32,19 +32,48 @@ app.post('/upload', upload.single('userfile'), function(req, res){
   res.send('Uploaded : '+req.file.filename);
 });
 
-app.get('/topic/delete/:id', function(req, res){
+app.get('/topic/:id/delete', function(req, res){
+  var sql = 'SELECT id,title FROM topic';
+  var id = req.params.id;
+  conn.query(sql, function(err, topics, fields){
+    var sql = 'SELECT * FROM topic WHERE id=?';
+    conn.query(sql, [id], function(err,topic){
+      if(err){
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+      }else{
+        if(topic.length === 0){
+          console.log("there is no record");
+          res.status(500).send('Internal Server Error');
+        }else{
+          res.render('delete',{topics:topics,topic:topic[0]});
+        }
+      }
+    });
+  });
+  // var id = req.params.id;
+  // var sql = 'DELETE FROM topic WHERE id=?';
+  // conn.query(sql, [id], function(err, rows, fields){
+  //   if(err){
+  //     console.log(err);
+  //     res.status(500).send('Internal Server Error');
+  //   }else{
+  //     res.redirect('/topic');
+  //   }
+  // });
+});
+app.post('/topic/:id/delete',function(req, res){
   var id = req.params.id;
   var sql = 'DELETE FROM topic WHERE id=?';
-  conn.query(sql, [id], function(err, rows, fields){
+  conn.query(sql, [id], function(err, result, fields){
     if(err){
       console.log(err);
       res.status(500).send('Internal Server Error');
     }else{
-      res.redirect('/topic');
+      res.redirect('/topic/');
     }
   });
-
-});
+})
 
 app.post('/topic/add', function(req, res){
   var title = req.body.title;
