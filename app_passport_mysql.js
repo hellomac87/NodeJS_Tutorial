@@ -7,7 +7,15 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var hasher = bkfd2Password();
-
+var mysql = require('mysql');
+var db_config = require('./config/mysql_config.json');
+var conn = mysql.createConnection({
+  host     : db_config.host,
+  user     : db_config.user,
+  password : db_config.password,
+  database : db_config.database
+});
+conn.connect();
 var app = express();
 
 app.use(bodyParser.urlencoded({extended:false}));
@@ -166,12 +174,20 @@ app.post('/auth/register', function(req, res){
       salt: salt,
       displayName : req.body.displayName
     };
-    users.push(user);
-    req.login(user, function(err){
-      req.session.save(function(){
+    var sql = 'INSERT INTO users SET ?';
+    conn.query(sql, user, function(err, results){
+      if(err){
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+      }else{
         res.redirect('/welcome');
-      });
+      }
     });
+    // req.login(user, function(err){
+    //   req.session.save(function(){
+    //     res.redirect('/welcome');
+    //   });
+    // });
   });
 });
 
