@@ -1,6 +1,6 @@
 var express = require('express');
 var session = require('express-session');
-var FileStore = require('session-file-store')(session);
+var MySQLStore = require('express-mysql-session')(session);
 var bodyParser = require('body-parser');
 var bkfd2Password = require("pbkdf2-password");
 var passport = require('passport');
@@ -15,7 +15,13 @@ app.use(session({
   secret: 'somerandomvalue',
   resave: false,
   saveUninitialized: true,
-  store: new FileStore()
+  store: new MySQLStore({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: '111111',
+    database: 'o2'
+  })
 }));
 
 //passport init : session설정 뒤에 와야함
