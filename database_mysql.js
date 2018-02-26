@@ -20,7 +20,7 @@ conn.query(sql, function(err, rows, fields){
   }
 });
 */
-
+/*
 var sql ='INSERT INTO topic (title, description, author) VALUES(?,?,?)';
 var params = ['config', 'secret information', 'slanude'];
 conn.query(sql, params, function(err, rows, fields){
@@ -30,7 +30,7 @@ conn.query(sql, params, function(err, rows, fields){
     console.log(rows.insertId);
   }
 });
-
+*/
 /*
 var sql ='UPDATE topic SET title=?, author=? WHERE id=?';
 var params = ['NPM', 'slanude', '1'];
