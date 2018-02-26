@@ -32,6 +32,20 @@ app.post('/upload', upload.single('userfile'), function(req, res){
   res.send('Uploaded : '+req.file.filename);
 });
 
+app.get('/topic/delete/:id', function(req, res){
+  var id = req.params.id;
+  var sql = 'DELETE FROM topic WHERE id=?';
+  conn.query(sql, [id], function(err, rows, fields){
+    if(err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    }else{
+      res.redirect('/topic');
+    }
+  });
+
+});
+
 app.post('/topic/add', function(req, res){
   var title = req.body.title;
   var description = req.body.description;
@@ -77,6 +91,22 @@ app.get(['/topic/:id/edit'], function(req, res){
       //뷰
       console.log('There is no id');
       res.status(500).send('Internal Server Error');
+    }
+  });
+});
+
+app.post(['/topic/:id/edit'], function(req, res){
+  var title = req.body.title;
+  var description = req.body.description;
+  var author = req.body.author;
+  var id = req.params.id;
+  var sql = 'UPDATE topic SET title=?, description=?, author=? WHERE id=?';
+  conn.query(sql, [title,description, author, id], function(err, rows, fields){
+    if(err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    }else{
+      res.redirect('/topic/'+id);
     }
   });
 });
