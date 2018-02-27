@@ -130,19 +130,27 @@ passport.use(new FacebookStrategy({
   function(accessToken, refreshToken, profile, done) {
     console.log(profile);
     var authId = 'facebook:'+profile.id;
-    for(var i=0; i<users.lenth; i++){
-      var user =users[i];
-      if(user.authId === authId){
-        return done(null, user);
+    var sql = 'SELECT * FROM users WHERE authId=?';
+    conn.query(sql, [authId], function(err, results){
+      if(results.length>0){
+        done(null, results[0]);
+      } else {
+        var sql = 'INSERT INTO users SET ?';
+        var newuser = {
+          'authId':authId,
+          'displayName': profile.displayName,
+          'email': profile.emails[0].value
+        }
+        conn.query(sql, [newuser], function(err, results){
+          if(err){
+            console.log(err);
+            done('err');
+          } else {
+            done(null, newuser);
+          }
+        });
       }
-    }
-    var newuser = {
-      'authId':authId,
-      'displayName': profile.displayName,
-      'email': profile.emails[0].value
-    }
-    users.push(newuser);
-    done(null, newuser);
+    });
   }
 ));
 
@@ -201,16 +209,6 @@ app.post('/auth/register', function(req, res){
 
   });
 });
-
-var users = [
-  {
-    authId:'local:egoing',
-    username : 'egoing',
-    password : 'JbSxG1H2cG3T1STHVVjtfHjSO03hfiw1GN6IUGCUqBkN9o3Zp2sZx6M7B7XHTRQhPZiYQwIcfEZIBDsqZ148yZPPVcIgJHUh8CM6O8i6WaSvcJU8kQUc9BnlkI/nE0ExebjO1NvMsJcGWtxZvntlE3ew1b8EDfa+AK0Tyf5E3dU=',
-    salt: 'L+un0nx5Fj2zRM5J3YKoikB7Vlaow0EHEdO7ODJzXSdI1/2Mh7hAESBTNDbvmdFsLh07V1hSzqABft0P7mOl6w==',
-    displayName:'Egoing'
-  }
-];
 app.get('/auth/register', function(req, res){
   var output = `
     <h1>Register</h1>
