@@ -157,68 +157,8 @@ passport.use(new FacebookStrategy({
   }
 ));
 
-//LocalStrategy
-app.post(
-  '/auth/login',
-  passport.authenticate(
-    'local',
-    {
-      successRedirect: '/welcome',
-      failureRedirect: '/auth/login',
-      failureFlash: false
-    }
-  )
-);
-//FacebookStrategy
-app.get(
-  '/auth/facebook',
-  passport.authenticate(
-    'facebook',
-    {scope:'email'}
-  )
-);
-app.get(
-  '/auth/facebook/callback',
-  passport.authenticate(
-    'facebook', {
-      successRedirect: '/welcome',
-      failureRedirect: '/auth/login'
-    }
-  )
-);
-
-app.post('/auth/register', function(req, res){
-  hasher({password:req.body.password}, function(err, pass, salt, hash){
-    var user = {
-      authId : 'local:'+req.body.username,
-      username : req.body.username,
-      password : hash,
-      salt: salt,
-      displayName : req.body.displayName
-    };
-    var sql = 'INSERT INTO users SET ?';
-    conn.query(sql, user, function(err, results){
-      if(err){
-        console.log(err);
-        res.status(500).send('Internal Server Error');
-      }else{
-        req.login(user, function(err){
-          req.session.save(function(){
-            res.redirect('/welcome');
-          });
-        });
-      }
-    });
-
-  });
-});
-app.get('/auth/register', function(req, res){
-  res.render('auth/register');
-});
-
-app.get('/auth/login', function(req, res){
-  res.render('auth/login');
-});
+var auth = require('./routes/mysql/auth')(passport);
+app.use('/auth', auth);
 
 app.listen(3000, function(){
     console.log('Connected 3000 port');
