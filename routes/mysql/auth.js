@@ -1,5 +1,8 @@
 module.exports = function(passport){
   //var express = rquire('express');
+  var conn = require('../../config/mysql/db')();
+  var bkfd2Password = require("pbkdf2-password");
+  var hasher = bkfd2Password();
   var route = require('express').Router();
   //LocalStrategy
   route.post(
