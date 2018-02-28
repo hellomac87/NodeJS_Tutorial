@@ -48,12 +48,7 @@ app.get('/count', function(req, res){
   res.send('count : ' + req.session.count);
 });
 
-app.get('/auth/logout', function(req, res){
-  req.logout();
-  return req.session.save(function(){
-    res.redirect('/welcome');
-  });
-});
+
 
 app.get('/welcome', function(req, res){
   //로그인 성공시 세션 다룰 코드
