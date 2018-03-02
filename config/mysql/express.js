@@ -1,5 +1,5 @@
 
-module.exports = function(){
+module.exports = function(){  
   var express = require('express');
   var session = require('express-session');
   var MySQLStore = require('express-mysql-session')(session);

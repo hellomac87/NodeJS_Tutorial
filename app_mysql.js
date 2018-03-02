@@ -1,11 +1,8 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.locals.pretty = true;
-app.set('views', './views/mysql');
-app.set('view engine', 'pug');
+var app = require('./config/mysql/express')();
+var passport = require('./config/mysql/passport')(app);
+var auth = require('./routes/mysql/auth')(passport);
+app.use('/auth', auth);
 
 var topic = require('./routes/mysql/topic')();
 app.use('/topic', topic);
